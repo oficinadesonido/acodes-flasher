@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>acOdes · Osciloscopio</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:960px;margin:20px auto;padding:0 16px;background:#0b1020;color:#cdd7ea;}
+  h1{color:#39d98a;font-size:20px;margin:0 0 2px;} .sub{color:#7b8aa6;margin-top:0;font-size:14px;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0;}
+  button,select{font-size:14px;padding:7px 12px;border-radius:8px;border:1px solid #2c3a57;background:#16203a;color:#cdd7ea;cursor:pointer;}
+  button:hover{background:#1d2b4a;} canvas{width:100%;height:360px;background:#0b1020;border:1px solid #22304a;border-radius:10px;display:block;}
+  #notes{font:16px monospace;color:#e8b04b;margin:8px 2px;} label{font-size:13px;color:#9fb3d1;}
+  .hint{font-size:12px;color:#6b7ba0;} a{color:#39d98a;}
+</style>
+</head>
+<body>
+  <h1>acOdes · Osciloscopio</h1>
+  <p class="sub">Lee la salida de audio de la placa (por la placa de sonido) y las notas por USB. Chrome/Edge. <a href="./index.html">← volver</a></p>
+
+  <div class="row">
+    <button id="bAudio">🎧 Conectar audio</button>
+    <select id="dev" title="entrada de audio"></select>
+    <label>canal <select id="chan"></select></label>
+    <button id="bSerial">🔌 Conectar placa (notas)</button>
+  </div>
+  <div class="row">
+    <button id="bFreeze">⏸ Congelar</button>
+    <label>ventana <input id="win" type="range" min="2" max="60" value="20"> <span id="winv">20</span> ms</label>
+    <label><input id="auto" type="checkbox" checked> autoescala</label>
+  </div>
+
+  <canvas id="cv" width="920" height="360"></canvas>
+  <div id="notes">notas: —</div>
+  <p class="hint">Si la placa entra a la interfaz por un canal &gt; 2 (ej. la MOTU M4, canal 3), elegilo en «canal».
+  Si tu navegador solo da 2 canales, ruteá la placa a las entradas 1/2 de la interfaz.</p>
+
+<script>
+let ac, analyser, splitter, srcNode, dataArr, chanCount=2, chanSel=0;
+let freeze=false, autoscale=true, winms=20, notes="—", raf;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+async function listDevices(){
+  const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');
+  const s=document.getElementById('dev'); s.innerHTML='';
+  devs.forEach(d=>{const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('entrada '+d.deviceId.slice(0,6));s.appendChild(o);});
+}
+async function startAudio(){
+  const id=document.getElementById('dev').value;
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{
+    deviceId:id?{exact:id}:undefined, channelCount:{ideal:8},
+    echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+  if(ac) ac.close();
+  ac=new AudioContext();
+  srcNode=ac.createMediaStreamSource(stream);
+  chanCount=srcNode.channelCount||stream.getAudioTracks()[0].getSettings().channelCount||2;
+  splitter=ac.createChannelSplitter(chanCount);
+  srcNode.connect(splitter);
+  analyser=ac.createAnalyser(); analyser.fftSize=4096; dataArr=new Float32Array(analyser.fftSize);
+  // llenar selector de canales
+  const cs=document.getElementById('chan'); cs.innerHTML='';
+  for(let i=0;i<chanCount;i++){const o=document.createElement('option');o.value=i;o.textContent=(i+1);cs.appendChild(o);}
+  chanSel=Math.min(chanCount>2?2:0, chanCount-1); cs.value=chanSel;  // por defecto canal 3 si hay >2
+  connectChan();
+  await listDevices();  // ahora con labels (permiso dado)
+  if(!raf) draw();
+}
+function connectChan(){ try{splitter.disconnect(analyser);}catch(e){} splitter.connect(analyser, chanSel); }
+
+document.getElementById('bAudio').onclick=()=>startAudio().catch(e=>alert('audio: '+e));
+document.getElementById('chan').onchange=e=>{chanSel=+e.target.value;connectChan();};
+document.getElementById('dev').onchange=()=>startAudio();
+document.getElementById('bFreeze').onclick=()=>freeze=!freeze;
+document.getElementById('win').oninput=e=>{winms=+e.target.value;document.getElementById('winv').textContent=winms;};
+document.getElementById('auto').onchange=e=>autoscale=e.target.checked;
+
+function draw(){
+  raf=requestAnimationFrame(draw);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle='#22304a'; for(let y=0;y<=cv.height;y+=cv.height/8){ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(cv.width-10,y);ctx.stroke();}
+  ctx.strokeStyle='#33507f'; ctx.beginPath();ctx.moveTo(40,cv.height/2);ctx.lineTo(cv.width-10,cv.height/2);ctx.stroke();
+  if(analyser && !freeze){
+    analyser.getFloatTimeDomainData(dataArr);
+    const sr=ac.sampleRate, nwin=Math.min(dataArr.length, Math.round(sr*winms/1000));
+    let m=0; for(let i=0;i<nwin;i++) m+=dataArr[i]; m/=nwin;
+    let st=0; for(let i=1;i<nwin;i++){ if(dataArr[i-1]-m<=0 && dataArr[i]-m>0){st=i;break;} } // trigger cruce cero
+    let mx=1e-4; for(let i=st;i<st+nwin&&i<dataArr.length;i++){const v=Math.abs(dataArr[i]-m); if(v>mx)mx=v;}
+    if(!autoscale) mx=1.0;
+    let pk=mx, rms=0,cnt=0;
+    ctx.strokeStyle=(pk>=0.999)?'#ff5a5a':'#39d98a'; ctx.lineWidth=2; ctx.beginPath();
+    const N=Math.min(nwin, dataArr.length-st);
+    for(let i=0;i<N;i++){
+      const v=dataArr[st+i]-m; rms+=v*v;cnt++;
+      const x=40+(cv.width-60)*i/(N-1), y=cv.height/2-(cv.height/2-20)*(v/mx);
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+    rms=Math.sqrt(rms/Math.max(1,cnt));
+    ctx.fillStyle='#9fb3d1'; ctx.font='13px monospace';
+    ctx.fillText('canal '+(chanSel+1)+'/'+chanCount+'   peak '+(20*Math.log10(pk||1e-6)).toFixed(1)+' dBFS   rms '+rms.toFixed(3)+'   ventana '+winms+' ms', 46, 18);
+  }
+  document.getElementById('notes').textContent='notas: '+notes;
+}
+
+// ---- Web Serial: leer [NOTES] de la placa ----
+document.getElementById('bSerial').onclick=async()=>{
+  try{
+    const port=await navigator.serial.requestPort();
+    await port.open({baudRate:115200});
+    const dec=new TextDecoderStream(); port.readable.pipeTo(dec.writable);
+    const rd=dec.readable.getReader(); let buf='';
+    while(true){ const {value,done}=await rd.read(); if(done)break; buf+=value;
+      let nl; while((nl=buf.indexOf('\n'))>=0){ const line=buf.slice(0,nl); buf=buf.slice(nl+1);
+        const i=line.indexOf('[NOTES]'); if(i>=0) notes=line.slice(i+7).trim()||'(silencio)'; } }
+  }catch(e){ alert('serial: '+e); }
+};
+
+navigator.mediaDevices?.enumerateDevices && listDevices();
+draw();
+</script>
+</body>
+</html>

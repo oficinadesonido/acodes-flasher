@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>acOdes · Web Flasher (placa azul)</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  body { font-family: system-ui, 'Lato', sans-serif; max-width: 640px; margin: 40px auto;
+         padding: 0 20px; color: #1c2230; line-height: 1.55; background:#fbfbfd; }
+  h1 { color: #1558b0; margin-bottom: 2px; }
+  .sub { color: #6b7480; margin-top: 0; }
+  .card { background: #fff; border:1px solid #e6e8ee; border-radius: 12px; padding: 18px 22px; margin: 18px 0; }
+  ol { padding-left: 20px; } li { margin: 5px 0; }
+  button { font-size: 15px; padding: 9px 16px; border-radius: 8px; border:1px solid #1558b0;
+           background:#fff; color:#1558b0; cursor:pointer; }
+  esp-web-install-button { --esp-tools-button-color:#fff; --esp-tools-button-background-color:#1558b0; }
+  esp-web-install-button button[slot=activate]{ background:#1558b0; color:#fff; }
+  code { background:#eef0f4; padding:0 5px; border-radius:4px; }
+  .warn { background:#fff7e6; border-left:4px solid #e0a800; padding:8px 12px; font-size:.92em; border-radius:0 8px 8px 0; }
+  a { color:#1558b0; }
+</style>
+</head>
+<body>
+  <h1>acOdes</h1>
+  <p class="sub">Módulo de acordes · firmware prototipo para <b>placa azul</b> (ESP32-S3 + AMY)</p>
+
+  <div class="card">
+    <b>Instalar el firmware</b>
+    <ol>
+      <li>Conectá la placa azul al computador por <b>USB</b>.</li>
+      <li>Usá <b>Chrome</b> o <b>Edge</b> de escritorio (necesitan Web Serial).</li>
+      <li>Apretá <b>Instalar</b>, elegí el puerto de la placa (ESP32-S3 / <code>ttyACM</code>) y esperá la barra.</li>
+      <li>Si falla el reset automático: mantené <b>BOOT</b> apretado, apretá Instalar, soltá al empezar la barra.</li>
+    </ol>
+    <p><esp-web-install-button manifest="./manifest.json">
+      <button slot="activate">⬇ Instalar acOdes</button>
+      <span slot="unsupported">Tu navegador no soporta Web Serial — usá Chrome/Edge de escritorio.</span>
+      <span slot="not-allowed">Se necesita HTTPS (o localhost) para acceder al puerto.</span>
+    </esp-web-install-button></p>
+  </div>
+
+  <div class="card">
+    <b>Después de instalar</b>
+    <p>
+      <a href="./manual.html"><button>📖 Manual de uso</button></a>
+      <a href="./scope.html"><button>📈 Osciloscopio</button></a>
+    </p>
+    <p class="sub" style="font-size:.9em">El <b>osciloscopio</b> se abre en el navegador y lee la salida de
+    audio de la placa (por la placa de sonido). Muestra la forma de onda y las notas sonando. No instala nada.</p>
+  </div>
+
+  <div class="warn">
+    Es un <b>prototipo en desarrollo</b> sobre la placa azul (odesEucli1). El firmware asume ese ruteo de
+    controles (pots/botones por MUX). En la placa definitiva el mapeo cambia.
+  </div>
+
+  <p class="sub" style="font-size:.82em">ESP32-S3 · 16MB flash · 4 partes (bootloader 0x0, particiones 0x8000,
+  boot_app0 0xE000, app 0x10000). Fuente: github.com/oficinadesonido/acordesEsp32</p>
+</body>
+</html>

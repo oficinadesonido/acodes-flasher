@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>acOdes · Manual (prototipo placa azul)</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:680px;margin:36px auto;padding:0 20px;color:#1c2230;line-height:1.55;}
+  h1{color:#1558b0;margin-bottom:2px;} h2{color:#1558b0;margin-top:26px;font-size:19px;}
+  .sub{color:#6b7480;margin-top:0;} table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;}
+  td,th{border:1px solid #e2e5ec;padding:6px 10px;text-align:left;} th{background:#f2f5fa;}
+  code{background:#eef0f4;padding:0 5px;border-radius:4px;} .note{background:#eef6ff;border-left:4px solid #1558b0;padding:8px 12px;border-radius:0 8px 8px 0;font-size:.94em;}
+  a{color:#1558b0;}
+</style>
+</head>
+<body>
+  <h1>acOdes — manual</h1>
+  <p class="sub">Prototipo sobre <b>placa azul</b> (odesEucli1). <a href="./index.html">← volver al flasher</a> · <a href="./scope.html">osciloscopio</a></p>
+
+  <p>Generador de acordes para drone y performance. Elegís una raíz y un tipo de acorde y el módulo lo
+  toca; con las perillas esculpís el sonido (inversión, densidad, filtro, chorus).</p>
+
+  <h2>Botones</h2>
+  <table>
+    <tr><th>Botón</th><th>Función</th></tr>
+    <tr><td>B1 · B2 · B3 · B4</td><td>Bancos A · B · C · D (cada uno guarda su acorde). Los tocás y salta al instante.</td></tr>
+    <tr><td>B5</td><td><b>Shift</b> (modificador).</td></tr>
+  </table>
+
+  <h2>Encoder</h2>
+  <table>
+    <tr><td>Girar</td><td>Raíz del acorde (sube/baja de a un semitono, C2–C6).</td></tr>
+    <tr><td>Girar + apretar</td><td>Tipo de acorde (Maj, min7, sus4, add9…).</td></tr>
+    <tr><td>Girar + Shift</td><td><b>Timbre</b>: ondas simples (sine, square, tri, saw) y patches Juno/DX7.</td></tr>
+  </table>
+
+  <h2>Perillas</h2>
+  <table>
+    <tr><th>Pote</th><th>Función</th></tr>
+    <tr><td>P1</td><td>Inversión del acorde (0–15, estilo HAGIWO; aparece el bajo en las inversiones altas).</td></tr>
+    <tr><td>P2</td><td>Cutoff del filtro pasa-bajos.</td></tr>
+    <tr><td>P3</td><td>Resonancia del filtro.</td></tr>
+    <tr><td>P5</td><td>Chorus.</td></tr>
+    <tr><td>P6</td><td><b>Densidad</b>: cuántas notas suenan — de la fundamental sola a acorde extendido (independiente de la inversión).</td></tr>
+    <tr><td>P7</td><td>Amplitud del <b>LFO</b> (barre el filtro). <b>Shift+P7</b> = frecuencia del LFO.</td></tr>
+    <tr><td>P8</td><td>Frecuencia del <b>trigger</b> simulado (por ahora solo parpadea un LED; disparará la envolvente más adelante).</td></tr>
+  </table>
+  <div class="note">En la placa azul no están cableadas las entradas CV/trigger reales, así que se
+  <b>simulan</b> con P7 (LFO de CV) y P8 (trigger). En la placa definitiva serán entradas físicas.</div>
+
+  <h2>Pantalla (OLED)</h2>
+  <p>Muestra la raíz + tipo del acorde (ej. <code>C#3 min7</code>) y abajo el timbre, la densidad (<code>d</code>),
+  la inversión (<code>i</code>) y el banco activo.</p>
+
+  <h2>Osciloscopio</h2>
+  <p>Desde la página del <a href="./scope.html">osciloscopio</a> podés ver la forma de onda de la salida
+  (por la placa de sonido) y las notas que están sonando. No instala nada, corre en el navegador.</p>
+
+  <p class="sub" style="font-size:.85em">Prototipo en desarrollo. Faltan: envolvente morfeable, arpegiador,
+  arreglo, escalas/armonizador y presets. El mapeo físico es el de la placa azul y puede cambiar.</p>
+</body>
+</html>
