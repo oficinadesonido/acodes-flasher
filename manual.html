@@ -7,6 +7,7 @@
 <style>
   body{font-family:system-ui,sans-serif;max-width:680px;margin:36px auto;padding:0 20px;color:#1c2230;line-height:1.55;}
   h1{color:#1558b0;margin-bottom:2px;} h2{color:#1558b0;margin-top:26px;font-size:19px;}
+  h3{color:#1c2230;margin-top:18px;font-size:16px;}
   .sub{color:#6b7480;margin-top:0;} table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;}
   td,th{border:1px solid #e2e5ec;padding:6px 10px;text-align:left;} th{background:#f2f5fa;}
   code{background:#eef0f4;padding:0 5px;border-radius:4px;} .note{background:#eef6ff;border-left:4px solid #1558b0;padding:8px 12px;border-radius:0 8px 8px 0;font-size:.94em;}
@@ -17,46 +18,102 @@
   <h1>acOdes — manual</h1>
   <p class="sub">Prototipo sobre <b>placa azul</b> (odesEucli1). <a href="./index.html">← volver al flasher</a> · <a href="./scope.html">osciloscopio</a></p>
 
-  <p>Generador de acordes para drone y performance. Elegís una raíz y un tipo de acorde y el módulo lo
-  toca; con las perillas esculpís el sonido (inversión, densidad, filtro, chorus).</p>
+  <p>Generador de acordes para drone, ambient y performance. Acá nunca elegís escalas: <b>elegís acordes</b>,
+  y el instrumento deduce la tonalidad solo. Cuatro botones dan acceso inmediato a cuatro acordes; desde ahí
+  podés arpegiarlos, secuenciar una estructura de canción completa, esculpir el sonido con filtro y efectos,
+  o dejarlo respirar solo durante horas. Todo armoniza siempre; no hay notas equivocadas.</p>
 
   <h2>Botones</h2>
   <table>
     <tr><th>Botón</th><th>Función</th></tr>
-    <tr><td>B1 · B2 · B3 · B4</td><td>Bancos A · B · C · D (cada uno guarda su acorde). Los tocás y salta al instante.</td></tr>
-    <tr><td>B5</td><td><b>Shift</b> (modificador).</td></tr>
+    <tr><td>B1 · B2 · B3 · B4</td><td>Bancos <b>A · B · C · D</b> (cada uno guarda su acorde). Los tocás y salta al instante.</td></tr>
+    <tr><td>B5</td><td><b>Shift</b> (modificador). Un tap suelto de Shift = volver a la pantalla principal.</td></tr>
+    <tr><td>Shift + A</td><td>Modo <b>Arpegiador</b></td></tr>
+    <tr><td>Shift + B</td><td>Modo <b>Arreglo</b> (secuenciador de estructura)</td></tr>
+    <tr><td>Shift + D</td><td>Modo <b>Global</b> (voice leading, armonizador)</td></tr>
+    <tr><td>Shift + push encoder 1s</td><td><b>Presets</b> (Load/Save, 8 slots)</td></tr>
   </table>
 
   <h2>Encoder</h2>
   <table>
-    <tr><td>Girar</td><td>Raíz del acorde (sube/baja de a un semitono, C2–C6).</td></tr>
+    <tr><td>Girar</td><td>Raíz del acorde (semitonos, C2–C6).</td></tr>
     <tr><td>Girar + apretar</td><td>Tipo de acorde (Maj, min7, sus4, add9…).</td></tr>
     <tr><td>Girar + Shift</td><td><b>Timbre</b>: ondas simples (sine, square, tri, saw) y patches Juno/DX7.</td></tr>
+    <tr><td>En un menú</td><td>Girar = moverse entre parámetros · apretar = cambiar el valor.</td></tr>
   </table>
 
   <h2>Perillas</h2>
   <table>
-    <tr><th>Pote</th><th>Función</th></tr>
-    <tr><td>P1</td><td>Inversión del acorde (0–15, estilo HAGIWO; aparece el bajo en las inversiones altas).</td></tr>
-    <tr><td>P2</td><td>Cutoff del filtro pasa-bajos.</td></tr>
-    <tr><td>P3</td><td>Resonancia del filtro.</td></tr>
-    <tr><td>P5</td><td>Chorus.</td></tr>
-    <tr><td>P6</td><td><b>Densidad</b>: cuántas notas suenan — de la fundamental sola a acorde extendido (independiente de la inversión).</td></tr>
-    <tr><td>P7</td><td>Amplitud del <b>LFO</b> (barre el filtro). <b>Shift+P7</b> = frecuencia del LFO.</td></tr>
-    <tr><td>P8</td><td>Frecuencia del <b>trigger</b> simulado (por ahora solo parpadea un LED; disparará la envolvente más adelante).</td></tr>
+    <tr><th>Pote</th><th>Función</th><th>Con Shift</th></tr>
+    <tr><td>P1</td><td>Inversión del acorde (0–15, estilo HAGIWO; el bajo aparece en las inversiones altas).</td><td><b>Forma de la envolvente</b> (morph de 7 formas)</td></tr>
+    <tr><td>P2</td><td>Cutoff del filtro pasa-bajos.</td><td>—</td></tr>
+    <tr><td>P3</td><td>Chorus.</td><td>—</td></tr>
+    <tr><td>P4</td><td><b>Densidad</b>: cuántas notas suenan — de la fundamental sola a acorde extendido (independiente de la inversión).</td><td><b>Largo de la envolvente</b> (tope = drone)</td></tr>
+    <tr><td>P5</td><td>Resonancia del filtro.</td><td>—</td></tr>
+    <tr><td>P6</td><td>Nivel de <b>reverb</b>.</td><td><b>Programa</b> de reverb (Room/Hall/Plate/Dark)</td></tr>
+    <tr><td>P7</td><td>Amplitud del <b>LFO</b> que barre el filtro (0 = apagado).</td><td>Frecuencia del LFO (0.05–8 Hz)</td></tr>
+    <tr><td>P8</td><td>Frecuencia del <b>trigger</b> (0.2–12 Hz; 0 = apagado).</td><td>—</td></tr>
   </table>
-  <div class="note">En la placa azul no están cableadas las entradas CV/trigger reales, así que se
-  <b>simulan</b> con P7 (LFO de CV) y P8 (trigger). En la placa definitiva serán entradas físicas.</div>
+  <div class="note">Las capas con Shift usan <b>soft takeover</b>: al volver a la función principal, el valor
+  no salta hasta que cruces la posición del pote. En la placa azul no están cableadas las entradas CV/trigger
+  reales, así que se <b>simulan</b> con P7 (LFO de CV al filtro) y P8 (trigger). En la placa definitiva serán
+  entradas físicas.</div>
+
+  <h2>La envolvente</h2>
+  <p>Se dispara sola con cada trigger (P8) y con cada cambio de acorde. Su <b>forma</b> (Shift+P1) recorre 7
+  formas en morph continuo: de un golpe percusivo, pasando por ataque-sustain-release y el triángulo, hasta un
+  reverse seco. El <b>largo</b> (Shift+P4) va de ataques rápidos a swells largos; en el tope, <b>drone</b>
+  (envolvente plana, el trigger no toca el audio). Mientras ajustás, la pantalla dibuja la forma.</p>
+
+  <h2>Arpegiador (Shift+A)</h2>
+  <p>Convierte el acorde activo en arpegio sincronizado al trigger. Parámetros (girar = parámetro, apretar = valor):</p>
+  <ul>
+    <li><b>On/off</b></li>
+    <li><b>Dirección</b>: ascendente, descendente, ida y vuelta, random, converge y <b>pedal</b> (alterna cada nota con la más grave, anclando la fundamental como bajo continuo)</li>
+    <li><b>Subdivisión</b> del clock (x1–x4)</li>
+    <li><b>Pedal continuo</b>: una fundamental sostenida una octava abajo, de fondo, independiente del arpegio</li>
+  </ul>
+  <p>Salís del menú y el arpegiador sigue corriendo. El LED verde te dice si está activo (destella por paso).</p>
+
+  <h2>Arreglo (Shift+B)</h2>
+  <p>Secuenciador de estructura: armás una secuencia de <b>4 pasos</b> con tus bancos como partes, p. ej.
+  <code>4A → 2B → 1C → 4B</code>. Definís una <b>unidad</b> global (compases) y cada número la multiplica.
+  Apretar el encoder recorre paso1..4 → UNIDAD → ENV → RUN; un botón de banco asigna el acorde al paso;
+  girar cambia las repeticiones. El clock (trigger, 1 pulso = 1 compás) hace avanzar la estructura solo.</p>
+  <p>La opción <b>ENV</b> elige cómo respira la envolvente: por pulso de clock, por ciclo de unidad, o solo
+  al cambiar de acorde (para drones).</p>
+  <p><b>Con el arreglo corriendo, el arreglo manda</b>: los botones ya no saltan de acorde. En cambio,
+  <i>mantené presionado</i> un botón y editás ese banco con el encoder <b>en silencio</b>, sin interrumpir lo
+  que suena; el cambio se escucha la próxima vez que el arreglo pase por ahí.</p>
+
+  <h2>Global (Shift+D)</h2>
+  <ul>
+    <li><b>Voice leading</b> — el "modo pianista": al cambiar de acorde, las notas comunes se quedan quietas
+    y las demás se mueven lo mínimo (el bajo sí salta a la fundamental). La perilla de inversión sigue
+    mandando: posicionás la mano y el instrumento conduce desde ahí.</li>
+    <li><b>Armonizador</b> — los cuatro bancos se pliegan a la tonalidad del banco A, y <b>el tipo de acorde
+    de A elige el clima</b>: Do menor tiñe todo de eólico (oscuro); Do menor 7, de dórico; Do mayor 7, de
+    lidio (brillante). Con el armonizador puesto la pantalla muestra el acorde que <i>realmente</i> suena
+    (y una <code>H</code> de estado): el grado manda, tu tipo elige el adorno (tríada, séptima, add9, sus).</li>
+  </ul>
+
+  <h2>Presets (Shift + push 1s)</h2>
+  <p>Wizard <b>Load/Save</b> con 8 slots, navegado con el encoder; cada slot muestra un resumen antes de
+  cargar y sobrevive al apagado. Un preset guarda la "canción" completa: los cuatro acordes, el arreglo, el
+  arpegiador, la envolvente y el estado de voice leading/armonizador. Lo que <b>no</b> se guarda — a
+  propósito — es el timbre, el filtro y los FX: esos son tuyos, siempre en vivo, sin saltos al cambiar de
+  preset. El arreglo carga detenido.</p>
 
   <h2>Pantalla (OLED)</h2>
   <p>Muestra la raíz + tipo del acorde (ej. <code>C#3 min7</code>) y abajo el timbre, la densidad (<code>d</code>),
-  la inversión (<code>i</code>) y el banco activo.</p>
+  la inversión (<code>i</code>) y el banco activo. Cada modo (arpegio, arreglo, global, preset) tiene su
+  propia pantalla.</p>
 
   <h2>Osciloscopio</h2>
   <p>Desde la página del <a href="./scope.html">osciloscopio</a> podés ver la forma de onda de la salida
   (por la placa de sonido) y las notas que están sonando. No instala nada, corre en el navegador.</p>
 
-  <p class="sub" style="font-size:.85em">Prototipo en desarrollo. Faltan: envolvente morfeable, arpegiador,
-  arreglo, escalas/armonizador y presets. El mapeo físico es el de la placa azul y puede cambiar.</p>
+  <p class="sub" style="font-size:.85em">Prototipo en desarrollo (fw 0.2-proto, 2026-07-14). Pendiente: modo
+  In C y entradas CV/trigger físicas (placa definitiva). El mapeo es el de la placa azul y puede cambiar.</p>
 </body>
 </html>
