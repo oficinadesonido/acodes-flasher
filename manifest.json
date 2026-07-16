@@ -1,6 +1,6 @@
 {
   "name": "acOdes (placa azul)",
-  "version": "0.2.1-proto",
+  "version": "0.3-proto",
   "new_install_prompt_erase": false,
   "builds": [
     {

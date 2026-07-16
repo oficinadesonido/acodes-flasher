@@ -30,6 +30,7 @@
     <tr><td>B5</td><td><b>Shift</b> (modificador). Un tap suelto de Shift = volver a la pantalla principal.</td></tr>
     <tr><td>Shift + A</td><td>Modo <b>Arpegiador</b></td></tr>
     <tr><td>Shift + B</td><td>Modo <b>Arreglo</b> (secuenciador de estructura)</td></tr>
+    <tr><td>Shift + C</td><td>Modo <b>Envolvente</b> (forma y largo)</td></tr>
     <tr><td>Shift + D</td><td>Modo <b>Global</b> (voice leading, armonizador)</td></tr>
     <tr><td>Shift + push encoder 1s</td><td><b>Presets</b> (Load/Save, 8 slots)</td></tr>
   </table>
@@ -45,10 +46,10 @@
   <h2>Perillas</h2>
   <table>
     <tr><th>Pote</th><th>Función</th><th>Con Shift</th></tr>
-    <tr><td>P1</td><td>Inversión del acorde (0–15, estilo HAGIWO; el bajo aparece en las inversiones altas).</td><td><b>Forma de la envolvente</b> (morph de 7 formas)</td></tr>
+    <tr><td>P1</td><td>Inversión del acorde (0–15, estilo HAGIWO; el bajo aparece en las inversiones altas).</td><td>—</td></tr>
     <tr><td>P2</td><td>Cutoff del filtro pasa-bajos.</td><td>—</td></tr>
     <tr><td>P3</td><td>Chorus.</td><td>—</td></tr>
-    <tr><td>P4</td><td><b>Densidad</b>: cuántas notas suenan — de la fundamental sola a acorde extendido (independiente de la inversión).</td><td><b>Largo de la envolvente</b> (tope = drone)</td></tr>
+    <tr><td>P4</td><td><b>Densidad</b>: cuántas notas suenan — de la fundamental sola a acorde extendido (independiente de la inversión).</td><td>—</td></tr>
     <tr><td>P5</td><td>Resonancia del filtro.</td><td>—</td></tr>
     <tr><td>P6</td><td>Nivel de <b>reverb</b>.</td><td><b>Programa</b> de reverb (Room/Hall/Plate/Dark)</td></tr>
     <tr><td>P7</td><td>Amplitud del <b>LFO</b> que barre el filtro (0 = apagado).</td><td>Frecuencia del LFO (0.05–8 Hz)</td></tr>
@@ -59,11 +60,12 @@
   reales, así que se <b>simulan</b> con P7 (LFO de CV al filtro) y P8 (trigger). En la placa definitiva serán
   entradas físicas.</div>
 
-  <h2>La envolvente</h2>
-  <p>Se dispara sola con cada trigger (P8) y con cada cambio de acorde. Su <b>forma</b> (Shift+P1) recorre 7
-  formas en morph continuo: de un golpe percusivo, pasando por ataque-sustain-release y el triángulo, hasta un
-  reverse seco. El <b>largo</b> (Shift+P4) va de ataques rápidos a swells largos; en el tope, <b>drone</b>
-  (envolvente plana, el trigger no toca el audio). Mientras ajustás, la pantalla dibuja la forma.</p>
+  <h2>Envolvente (Shift+C)</h2>
+  <p>Se dispara sola con cada trigger (P8) y con cada cambio de acorde. Tiene su propio modo: con Shift+C
+  abierto, <b>girar</b> el encoder ajusta el <b>largo</b> total (20 ms a 3 s, paso logarítmico) y
+  <b>apretar</b> cicla la <b>forma</b> entre 8: <code>PLUCK · PERC · ÓRGANO · MEDIO · PAD · SWELL ·
+  REVERSE · DRONE</code>. En <b>DRONE</b> (la forma de arranque) el largo es el swell de entrada y después
+  sostiene infinito — el trigger no corta el audio. Mientras ajustás, la pantalla dibuja la forma.</p>
 
   <h2>Arpegiador (Shift+A)</h2>
   <p>Convierte el acorde activo en arpegio sincronizado al trigger. Parámetros (girar = parámetro, apretar = valor):</p>
@@ -109,11 +111,25 @@
   la inversión (<code>i</code>) y el banco activo. Cada modo (arpegio, arreglo, global, preset) tiene su
   propia pantalla.</p>
 
+  <h2>Modo oculto: In C</h2>
+  <p>Homenaje a <i>In C</i> de Terry Riley: la partitura real (53 patrones) tocada por <b>4 voces</b> más el
+  pulso de Do agudo, cada voz con un timbre distinto elegido al azar. Se entra <b>encendiendo la máquina con
+  el push del encoder apretado</b> y manteniéndolo 2 s (barra en pantalla).</p>
+  <ul>
+    <li><b>A/B/C/D</b> — cada botón maneja una voz: la hace entrar (afina y arranca en el patrón 1) o la
+    avanza a su próximo patrón al terminar el loop.</li>
+    <li><b>P8</b> — tempo (reloj interno propio, no necesita cable). Filtro, resonancia, chorus y reverb
+    siguen operativos.</li>
+    <li><b>Cohesión</b>: si una voz se atrasa 3+ patrones del líder, la pantalla y el LED rojo avisan
+    (como en la obra: nadie se queda muy atrás).</li>
+    <li><b>Encoder</b> — tap = cambio al azar · mantener 2 s = salir (reinicia al modo normal).</li>
+  </ul>
+
   <h2>Osciloscopio</h2>
   <p>Desde la página del <a href="./scope.html">osciloscopio</a> podés ver la forma de onda de la salida
   (por la placa de sonido) y las notas que están sonando. No instala nada, corre en el navegador.</p>
 
-  <p class="sub" style="font-size:.85em">Prototipo en desarrollo (fw 0.2-proto, 2026-07-14). Pendiente: modo
-  In C y entradas CV/trigger físicas (placa definitiva). El mapeo es el de la placa azul y puede cambiar.</p>
+  <p class="sub" style="font-size:.85em">Prototipo en desarrollo (fw 0.3-proto, 2026-07-16). Pendiente:
+  entradas CV/trigger físicas (placa definitiva). El mapeo es el de la placa azul y puede cambiar.</p>
 </body>
 </html>
